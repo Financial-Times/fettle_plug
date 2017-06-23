@@ -30,5 +30,6 @@ defmodule FettlePlugTest do
     conn = Fettle.Plug.call(conn, config)
     assert conn.resp_body == ~s({"status":"OK"})
     assert {"content-type", "application/json; charset=utf-8"} in conn.resp_headers
+    assert {"cache-control", "no-store"} in conn.resp_headers
   end
 end
