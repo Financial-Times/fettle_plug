@@ -29,7 +29,22 @@ defmodule FettleRouteTest do
     end
   end
 
-  defmodule Router do
+  defmodule RouterDefault do
+    use Plug.Router
+    plug :match
+    plug :dispatch
+
+    forward "/__health", to: Fettle.Plug
+  end
+
+  test "routes to plug, default settings" do
+    conn = conn("GET", "/__health")
+    conn = RouterDefault.call(conn, RouterDefault.init([]))
+    {200, _headers, body} = sent_resp(conn)
+    assert Poison.decode!(body)["systemCode"] == "fettle_plug"
+  end
+
+  defmodule RouterCustom do
     use Plug.Router
     plug :match
     plug :dispatch
@@ -37,10 +52,10 @@ defmodule FettleRouteTest do
     forward "/__health", to: Fettle.Plug, init_opts: [schema: FettleRouteTest.Schema]
   end
 
-  test "routes to plug" do
+  test "routes to plug, custom settings" do
     conn = conn("GET", "/__health")
-    conn = Router.call(conn, Router.init([]))
-    {status, headers, body} = sent_resp(conn)
+    conn = RouterCustom.call(conn, RouterCustom.init([]))
+    {200, _headers, body} = sent_resp(conn)
     assert body == Poison.encode!(%{"schema" => "FettleRouteTest.Schema", "count" => 1})
   end
 

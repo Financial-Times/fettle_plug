@@ -23,6 +23,16 @@ defmodule FettlePlugTest do
     assert config == {nil}
   end
 
+    test "reports (with default schema)" do
+    config = Fettle.Plug.init([])
+    conn = conn("GET", "/__health")
+
+    conn = Fettle.Plug.call(conn, config)
+    assert Regex.match?(~r/"systemCode":"fettle_plug"/, conn.resp_body), conn.resp_body
+    assert {"content-type", "application/json; charset=utf-8"} in conn.resp_headers
+    assert {"cache-control", "no-store"} in conn.resp_headers
+  end
+
   test "reports (with custom schema)" do
     config = Fettle.Plug.init([schema: TestSchema])
     conn = conn("GET", "/__health")
