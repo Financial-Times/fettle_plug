@@ -3,8 +3,8 @@ defmodule FettlePlug.Mixfile do
 
   def project do
     [app: :fettle_plug,
-     version: "0.1.0",
-     elixir: "~> 1.4",
+     version: "1.0.0",
+     elixir: "~> 1.5",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      source_url: "https://github.com/Financial-Times/fettle_plug",
@@ -19,7 +19,7 @@ defmodule FettlePlug.Mixfile do
   # Type "mix help compile.app" for more information
   def application do
     # Specify extra applications you'll use from Erlang/Elixir
-    [extra_applications: [:logger]]
+    [extra_applications: [:logger, :plug]]
   end
 
   def package do
@@ -45,7 +45,7 @@ defmodule FettlePlug.Mixfile do
       {:plug, "~> 1.3"},
       {:poison, "~> 3.1"},
       # {:fettle, github: "Financial-Times/fettle"},
-      {:fettle, "~> 0.1"},
+      {:fettle, "~> 1.0"},
       {:credo, "~> 0.5", only: [:dev, :test]},
       {:mix_test_watch, "~> 0.3", only: :dev, runtime: false},
       {:ex_doc, "~> 0.14", only: :dev, runtime: false},

@@ -11,7 +11,7 @@ Plug support for [Fettle](https://github.com/Financial-Times/fettle) health-chec
 ```elixir
 def deps do
   [
-    {:fettle_plug, "~> 0.1"}
+    {:fettle_plug, "~> 1.0"}
   ]
 end
 ```
@@ -40,7 +40,7 @@ use Plug.Router
 plug :match
 plug :dispatch
 
-forward "/__health", to: Fettle.Plug, init_opts: [schema: Fettle.Schema.FTHealthCheckV1]
+forward "/__health", to: Fettle.Plug, schema: Fettle.Schema.FTHealthCheckV1
 ```
 
 In a Phoenix `Router`, it's pretty much the same:
@@ -52,3 +52,13 @@ forward "/__health", Fettle.Plug, schema: Fettle.Schema.FTHealthCheckV1
 > Note in both examples above, the specification of the `schema` is **optional**,
 since `Fettle.Schema.FTHealthCheckV1` is the default.
 
+You can also match directly to a path without using `forward`, by specifying `path_info`, 
+which will match on exactly whatever is in `Plug.Conn.path_info`:
+
+```elixir
+plug Fettle.Plug, path_info: ["__health"]
+```
+
+Note that the latter use has subtly different semantics due to the way the Plug pipeline is built: 
+for instance the `Logger` plug will not log access if appears after `Fettle.Plug` in the 
+pipeline (because `Fettle.Plug` calls `Plug.Conn.halt/1`), but would log when using `forward`.

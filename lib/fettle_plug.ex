@@ -6,12 +6,13 @@ defmodule Fettle.Plug do
 
   @doc "`Plug.init/1`; takes a single keyword option, `:schema` which overrides Fettle's configured (or default) schema setting."
   def init(options) do
+    path_info = options[:path_info] || []
     schema = options[:schema]
-    {schema}
+    {path_info, schema}
   end
 
   @doc false
-  def call(conn, {schema}) do
+  def call(%{path_info: path_info} = conn, {path_info, schema}) do
     report = Fettle.report(schema)
 
     conn
@@ -20,5 +21,7 @@ defmodule Fettle.Plug do
     |> send_resp(200, Poison.encode_to_iodata!(report))
     |> halt
   end
+
+  def call(conn, _), do: conn
 
 end
