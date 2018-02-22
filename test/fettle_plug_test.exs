@@ -55,7 +55,7 @@ defmodule FettlePlugTest do
   end
 
   test "reports (with custom schema)" do
-    config = Fettle.Plug.init([schema: TestSchema])
+    config = Fettle.Plug.init(schema: TestSchema)
     conn = conn("GET", "/__health")
 
     conn = Fettle.Plug.call(conn, config)

@@ -1,5 +1,4 @@
 defmodule FettleRouteTest do
-
   use ExUnit.Case
   use Plug.Test
 
@@ -9,13 +8,14 @@ defmodule FettleRouteTest do
 
     {:ok, _pid} = start_supervised({Fettle.Supervisor, []})
 
-    Fettle.add(%Fettle.Spec{
-            name: "test-1",
-            panic_guide_url: "panic",
-            business_impact: "impact",
-            technical_summary: "impact"
-        },
-        Fettle.AlwaysHealthyCheck
+    Fettle.add(
+      %Fettle.Spec{
+        name: "test-1",
+        panic_guide_url: "panic",
+        business_impact: "impact",
+        technical_summary: "impact"
+      },
+      Fettle.AlwaysHealthyCheck
     )
 
     :ok
@@ -50,9 +50,7 @@ defmodule FettleRouteTest do
     assert Poison.decode!(body)["systemCode"] == "fettle_plug"
   end
 
-
   test "routes to plug, custom schema" do
-
     defmodule RouterCustomSchema do
       use Plug.Router
       plug :match
@@ -71,7 +69,6 @@ defmodule FettleRouteTest do
   end
 
   test "routing to plug, custom path_info" do
-
     defmodule RouterCustomPathInfo do
       use Plug.Router
       plug :match
@@ -82,16 +79,13 @@ defmodule FettleRouteTest do
       plug :dispatch
     end
 
-
     conn = conn("GET", "/__foo")
     conn = RouterCustomPathInfo.call(conn, RouterCustomPathInfo.init([]))
     {200, _headers, body} = sent_resp(conn)
-    assert  %{"schemaVersion" => 1, "systemCode" => "fettle_plug"} = Poison.decode!(body)
+    assert %{"schemaVersion" => 1, "systemCode" => "fettle_plug"} = Poison.decode!(body)
   end
 
-
   test "forwarding to plug, custom path_info" do
-
     defmodule RouterForwardCustomPathInfo do
       use Plug.Router
       plug :match
@@ -102,11 +96,9 @@ defmodule FettleRouteTest do
       plug :dispatch
     end
 
-
     conn = conn("GET", "/health")
     conn = RouterForwardCustomPathInfo.call(conn, RouterForwardCustomPathInfo.init([]))
     {200, _headers, body} = sent_resp(conn)
-    assert  %{"schemaVersion" => 1, "systemCode" => "fettle_plug"} = Poison.decode!(body)
+    assert %{"schemaVersion" => 1, "systemCode" => "fettle_plug"} = Poison.decode!(body)
   end
-
 end

@@ -22,7 +22,10 @@ defmodule Fettle.Plug do
     path_info = options[:path_info] || ["__health"]
     is_list(path_info) || raise ArgumentError, "path_info option must be a list of path segments"
     schema = options[:schema]
-    is_atom(schema) || raise ArgumentError, "schema option must be nil or a module implementing Fettle.Schema"
+
+    is_atom(schema) ||
+      raise ArgumentError, "schema option must be nil or a module implementing Fettle.Schema"
+
     {path_info, schema}
   end
 
@@ -38,5 +41,4 @@ defmodule Fettle.Plug do
   end
 
   def call(conn, _), do: conn
-
 end

@@ -2,16 +2,18 @@ defmodule FettlePlug.Mixfile do
   use Mix.Project
 
   def project do
-    [app: :fettle_plug,
-     version: "1.0.0",
-     elixir: "~> 1.5",
-     build_embedded: Mix.env == :prod,
-     start_permanent: Mix.env == :prod,
-     source_url: "https://github.com/Financial-Times/fettle_plug",
-     description: description(),
-     package: package(),
-     docs: docs(),
-     deps: deps()]
+    [
+      app: :fettle_plug,
+      version: "1.0.0",
+      elixir: "~> 1.5",
+      build_embedded: Mix.env() == :prod,
+      start_permanent: Mix.env() == :prod,
+      source_url: "https://github.com/Financial-Times/fettle_plug",
+      description: description(),
+      package: package(),
+      docs: docs(),
+      deps: deps()
+    ]
   end
 
   # Configuration for the OTP application
@@ -26,7 +28,8 @@ defmodule FettlePlug.Mixfile do
     [
       maintainers: ["Ellis Pritchard"],
       licenses: ["MIT"],
-      links: %{"Github" => "https://github.com/Financial-Times/fettle_plug"} ]
+      links: %{"Github" => "https://github.com/Financial-Times/fettle_plug"}
+    ]
   end
 
   defp description do
@@ -36,8 +39,7 @@ defmodule FettlePlug.Mixfile do
   end
 
   def docs do
-    [main: "readme",
-     extras: ["README.md"]]
+    [main: "readme", extras: ["README.md"]]
   end
 
   defp deps do
