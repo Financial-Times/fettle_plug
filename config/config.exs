@@ -4,3 +4,6 @@ use Mix.Config
 
 config :fettle,
     system_code: :fettle_plug
+
+config :logger,
+    level: :info

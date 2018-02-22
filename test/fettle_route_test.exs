@@ -4,7 +4,10 @@ defmodule FettleRouteTest do
   use Plug.Test
 
   setup do
-    Application.ensure_started(:fettle)
+    :ok = Application.ensure_started(:plug)
+    Application.put_env(:plug, :validate_header_keys_during_test, true)
+
+    {:ok, _pid} = start_supervised({Fettle.Supervisor, []})
 
     Fettle.add(%Fettle.Spec{
             name: "test-1",
@@ -32,9 +35,12 @@ defmodule FettleRouteTest do
   defmodule RouterDefault do
     use Plug.Router
     plug :match
-    plug :dispatch
 
-    forward "/__health", to: Fettle.Plug
+    plug Fettle.Plug
+
+    match _, do: send_resp(conn, 404, "Route Not Found\n")
+
+    plug :dispatch
   end
 
   test "routes to plug, default settings" do
@@ -44,19 +50,63 @@ defmodule FettleRouteTest do
     assert Poison.decode!(body)["systemCode"] == "fettle_plug"
   end
 
-  defmodule RouterCustom do
-    use Plug.Router
-    plug :match
-    plug :dispatch
 
-    forward "/__health", to: Fettle.Plug, init_opts: [schema: FettleRouteTest.Schema]
-  end
+  test "routes to plug, custom schema" do
 
-  test "routes to plug, custom settings" do
+    defmodule RouterCustomSchema do
+      use Plug.Router
+      plug :match
+
+      plug Fettle.Plug, schema: FettleRouteTest.Schema
+
+      match _, do: send_resp(conn, 404, "Route Not Found\n")
+
+      plug :dispatch
+    end
+
     conn = conn("GET", "/__health")
-    conn = RouterCustom.call(conn, RouterCustom.init([]))
+    conn = RouterCustomSchema.call(conn, RouterCustomSchema.init([]))
     {200, _headers, body} = sent_resp(conn)
     assert body == Poison.encode!(%{"schema" => "FettleRouteTest.Schema", "count" => 1})
+  end
+
+  test "routing to plug, custom path_info" do
+
+    defmodule RouterCustomPathInfo do
+      use Plug.Router
+      plug :match
+
+      plug Fettle.Plug, path_info: ["__foo"]
+      match _, do: send_resp(conn, 404, "Route Not Found\n")
+
+      plug :dispatch
+    end
+
+
+    conn = conn("GET", "/__foo")
+    conn = RouterCustomPathInfo.call(conn, RouterCustomPathInfo.init([]))
+    {200, _headers, body} = sent_resp(conn)
+    assert  %{"schemaVersion" => 1, "systemCode" => "fettle_plug"} = Poison.decode!(body)
+  end
+
+
+  test "forwarding to plug, custom path_info" do
+
+    defmodule RouterForwardCustomPathInfo do
+      use Plug.Router
+      plug :match
+
+      forward "/health", to: Fettle.Plug, path_info: []
+      match _, do: send_resp(conn, 404, "Route Not Found\n")
+
+      plug :dispatch
+    end
+
+
+    conn = conn("GET", "/health")
+    conn = RouterForwardCustomPathInfo.call(conn, RouterForwardCustomPathInfo.init([]))
+    {200, _headers, body} = sent_resp(conn)
+    assert  %{"schemaVersion" => 1, "systemCode" => "fettle_plug"} = Poison.decode!(body)
   end
 
 end

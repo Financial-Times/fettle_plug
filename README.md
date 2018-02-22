@@ -11,7 +11,7 @@ Plug support for [Fettle](https://github.com/Financial-Times/fettle) health-chec
 ```elixir
 def deps do
   [
-    {:fettle_plug, "~> 0.1"}
+    {:fettle_plug, "~> 1.0"}
   ]
 end
 ```
@@ -30,25 +30,23 @@ end
 
 ### Setup
 
-In your `Plug` pipeline (`Phoenix.Endpoint` etc.), forward to
-the `Fettle.Plug` module to serve your results from your desired URL:
+In your `Plug` pipeline (`Phoenix.Endpoint` etc.), use `Fettle.Plug` to serve your results from your desired URL:
 
 Plug example:
 
 ```elixir
 use Plug.Router
+
 plug :match
+
+# serve health check results under /__meta/health
+plug Fettle.Plug, path_info: ["__meta", "health"]
+
+# other routes
+match _, do: send_resp(conn, 404, "Route Not Found\n")
+
 plug :dispatch
-
-forward "/__health", to: Fettle.Plug, init_opts: [schema: Fettle.Schema.FTHealthCheckV1]
 ```
 
-In a Phoenix `Router`, it's pretty much the same:
-
-```elixir
-forward "/__health", Fettle.Plug, schema: Fettle.Schema.FTHealthCheckV1
-```
-
-> Note in both examples above, the specification of the `schema` is **optional**,
-since `Fettle.Schema.FTHealthCheckV1` is the default.
-
+* `path_info` defaults to `["__health"]`; it may be given as `[]` for use under `forward` etc.
+* A `schema` option uses a custom `Fettle.Schema` implementation; `Fettle.Schema.FTHealthCheckV1` is the default.

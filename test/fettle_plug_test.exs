@@ -2,7 +2,14 @@ defmodule FettlePlugTest do
   use ExUnit.Case
   use Plug.Test
 
-  doctest Fettle.Plug
+  setup do
+    :ok = Application.ensure_started(:plug)
+    Application.put_env(:plug, :validate_header_keys_during_test, true)
+
+    {:ok, _pid} = start_supervised(Fettle.Supervisor)
+
+    :ok
+  end
 
   defmodule TestSchema do
     @behaviour Fettle.Schema
@@ -14,16 +21,30 @@ defmodule FettlePlugTest do
   test "options accepts schema key" do
     config = Fettle.Plug.init(schema: Foo)
 
-    assert config == {Foo}
+    assert {_, Foo} = config
+  end
+
+  test "invalid schema key" do
+    assert_raise ArgumentError, fn -> Fettle.Plug.init(schema: "Foo") end
+  end
+
+  test "options accepts path_info key" do
+    config = Fettle.Plug.init(path_info: ["__foo"])
+
+    assert config == {["__foo"], nil}
+  end
+
+  test "invalid path_info key" do
+    assert_raise ArgumentError, fn -> Fettle.Plug.init(path_info: "__foo") end
   end
 
   test "options accepts empty options" do
     config = Fettle.Plug.init([])
 
-    assert config == {nil}
+    assert config == {["__health"], nil}
   end
 
-    test "reports (with default schema)" do
+  test "reports (with default schema)" do
     config = Fettle.Plug.init([])
     conn = conn("GET", "/__health")
 
