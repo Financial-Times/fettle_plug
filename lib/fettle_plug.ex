@@ -36,7 +36,7 @@ defmodule Fettle.Plug do
     conn
     |> put_resp_content_type("application/json")
     |> put_resp_header("cache-control", "no-store")
-    |> send_resp(200, Poison.encode_to_iodata!(report))
+    |> send_resp(200, Poison.encode!(report))
     |> halt
   end
 

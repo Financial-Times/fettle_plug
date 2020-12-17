@@ -4,8 +4,8 @@ defmodule FettlePlug.Mixfile do
   def project do
     [
       app: :fettle_plug,
-      version: "1.0.0",
-      elixir: "~> 1.5",
+      version: "1.1.0",
+      elixir: "~> 1.11",
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
       source_url: "https://github.com/Financial-Times/fettle_plug",
@@ -44,15 +44,14 @@ defmodule FettlePlug.Mixfile do
 
   defp deps do
     [
-      {:plug, "~> 1.3"},
-      {:poison, "~> 3.1"},
-      # {:fettle, github: "Financial-Times/fettle"},
-      {:fettle, "~> 1.0"},
-      {:credo, "~> 0.5", only: [:dev, :test]},
-      {:mix_test_watch, "~> 0.3", only: :dev, runtime: false},
-      {:ex_doc, "~> 0.14", only: :dev, runtime: false},
-      {:dialyxir, "~> 0.5.0", only: [:dev], runtime: false},
-      {:inch_ex, ">= 0.0.0", only: :docs}
+      {:plug, "~> 1.11"},
+      {:poison, "~> 4.0"},
+      {:fettle, github: "Financial-Times/fettle", tag: "v1.1.0"},
+      {:credo, "~> 1.5", only: [:dev, :test]},
+      {:mix_test_watch, "~> 1.0", only: :dev, runtime: false},
+      {:ex_doc, "~> 0.23.0", only: :dev, runtime: false},
+      {:dialyxir, "~> 1.0", only: [:dev], runtime: false},
+      {:inch_ex, "~> 2.0", only: :docs}
     ]
   end
 end

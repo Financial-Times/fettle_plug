@@ -1,3 +1,7 @@
+## v1.1.0
+* Upgrade Elixir and dependencies versions
+
+
 ## v1.0.0
 
 * Added `path_info` parameter for simple path matching in `Fettle.Plug`.
